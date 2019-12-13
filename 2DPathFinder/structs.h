@@ -10,6 +10,7 @@ namespace Nick
 
 	struct Node
 	{
+		//Konstruktor och destruktor kan vara dyra SE CLASS
 		~Node() 
 		{
 			delete[] myNeighbors;
