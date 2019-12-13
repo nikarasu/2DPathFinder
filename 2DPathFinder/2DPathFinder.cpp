@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "PathFinder.h"
+#include <iostream>
 
 int FindPath(
 	const int nStartX,
@@ -13,14 +14,25 @@ int FindPath(
 	const int nOutBufferSize
 )
 {
+	//Undvik classes f?r tr?ds?kerhetens skull
 	PathFinder pf;
-	Nick::Vector2 start{ nStartX,  nStartY };
-	Nick::Vector2 target{ nTargetX, nTargetY };
-
 	return 	pf.FindPath(nStartX, nStartY, nTargetX, nTargetY, pMap, nMapWidth, nMapHeight, pOutBuffer, nOutBufferSize);
 }
 
+class B
+{
+public:
+	virtual ~B();
+	int getA() const { return a; }
+
+private:
+	int a;
+};
+
 int main()
 {
+
+
+	std::cout << sizeof(B) << std::endl;
 	return 0;
 }
