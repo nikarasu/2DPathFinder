@@ -19,20 +19,8 @@ int FindPath(
 	return 	pf.FindPath(nStartX, nStartY, nTargetX, nTargetY, pMap, nMapWidth, nMapHeight, pOutBuffer, nOutBufferSize);
 }
 
-class B
-{
-public:
-	virtual ~B();
-	int getA() const { return a; }
-
-private:
-	int a;
-};
 
 int main()
 {
-
-
-	std::cout << sizeof(B) << std::endl;
 	return 0;
 }
