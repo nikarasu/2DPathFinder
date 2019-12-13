@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "PathFinder.h"
 
 PathFinder::PathFinder()
@@ -6,7 +6,6 @@ PathFinder::PathFinder()
 	myMapHeight = 0;
 	myMapWidth = 0;
 	myBufferSize = 0;
-	myFoundTarget = false;
 	myLocalNodeValues = nullptr;
 	myGlobalNodeValues = nullptr;
 	myParentNodeValues = nullptr;
@@ -24,61 +23,69 @@ PathFinder::~PathFinder()
 
 int PathFinder::FindPath(const int nStartX,	const int nStartY, const int nTargetX, const int nTargetY, const unsigned char * pMap, const int nMapWidth, const int nMapHeight, int* pOutBuffer, const int nOutBufferSize)
 {
-	myFoundTarget = (nStartX == nTargetX) && (nStartY == nTargetY);
-	signed int pathLength = 0;
 
-	if (pMap != nullptr && !myFoundTarget)
+	if (pMap == nullptr)
 	{
-		myMapHeight = nMapHeight;
-		myMapWidth = nMapWidth;
-		myBufferSize = nOutBufferSize;
-		myTileAmount = myMapHeight * myMapWidth;
-
-		myStartX = nStartX;
-		myStartY = nStartY;
-		myStartTileIndex = GetIndex(myStartX, myStartY);
-		myTargetX = nTargetX;
-		myTargetY = nTargetY;
-		myTargetTileIndex = GetIndex(myTargetX, myTargetY);
-
-		myNodeExistsIncheckList = new CustomBitSet(myTileAmount);
-
-		myLocalNodeValues = new int[myTileAmount];
-		std::fill_n(myLocalNodeValues, myTileAmount, myTileAmount);
-
-		myGlobalNodeValues = new int[myTileAmount];
-		std::fill_n(myGlobalNodeValues, myTileAmount, myTileAmount);
-
-		myParentNodeValues = new int[myTileAmount];
-		std::fill_n(myParentNodeValues, myTileAmount, myTileAmount);
-
-		myTileXPositions = new int[myTileAmount];
-		std::fill_n(myTileXPositions, myTileAmount, myTileAmount);
-
-		myTileYPositions = new int[myTileAmount];
-		std::fill_n(myTileYPositions, myTileAmount, myTileAmount);
-
-		myNodeCheckList = new int[myTileAmount] {0};
-
-		AddNodeToCheckList(myStartTileIndex);
-
-		pathLength = SearchForShortestPath(pMap, pOutBuffer);
-
-		delete[] myLocalNodeValues;
-		delete[] myGlobalNodeValues;
-		delete[] myParentNodeValues;
-		delete[] myNodeCheckList;
-		delete myNodeExistsIncheckList;
-		delete[] myTileXPositions;
-		delete[] myTileYPositions;
+		return -1;
 	}
+
+	if((nStartX == nTargetX) && (nStartY == nTargetY))
+	{
+		return 0;
+	}
+
+	myMapHeight = nMapHeight;
+	myMapWidth = nMapWidth;
+	myBufferSize = nOutBufferSize;
+	myTileAmount = myMapHeight * myMapWidth;
+
+	myStartX = nStartX;
+	myStartY = nStartY;
+	myStartTileIndex = GetIndex(myStartX, myStartY);
+	myTargetX = nTargetX;
+	myTargetY = nTargetY;
+	myTargetTileIndex = GetIndex(myTargetX, myTargetY);
+
+	myNodeExistsIncheckList = new CustomBitSet(myTileAmount);
+
+	//Minska antalet allokeringar, väldigt dyrt
+	//Ha allting i samma lista
+	//Vad händer om arrays hamnar på olika cache?
+
+	myLocalNodeValues = new int[myTileAmount];
+	std::fill_n(myLocalNodeValues, myTileAmount, myTileAmount);
+
+	myGlobalNodeValues = new int[myTileAmount];
+	std::fill_n(myGlobalNodeValues, myTileAmount, myTileAmount);
+
+	myParentNodeValues = new int[myTileAmount];
+	std::fill_n(myParentNodeValues, myTileAmount, myTileAmount);
+
+	myTileXPositions = new int[myTileAmount];
+	std::fill_n(myTileXPositions, myTileAmount, myTileAmount);
+
+	myTileYPositions = new int[myTileAmount];
+	std::fill_n(myTileYPositions, myTileAmount, myTileAmount);
+
+	myNodeCheckList = new int[myTileAmount] {0};
+
+	AddNodeToCheckList(myStartTileIndex);
+
+	signed int pathLength = SearchForShortestPath(pMap, pOutBuffer);
+
+	delete[] myLocalNodeValues;
+	delete[] myGlobalNodeValues;
+	delete[] myParentNodeValues;
+	delete[] myNodeCheckList;
+	delete myNodeExistsIncheckList;
+	delete[] myTileXPositions;
+	delete[] myTileYPositions;
 
 	return pathLength;
 }
 
 int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffer)
 {
-	bool hasNodesInChecklist = true;
 	int currentTileIndex = myStartTileIndex;
 	myLocalNodeValues[myStartTileIndex] = 0;
 	myGlobalNodeValues[myStartTileIndex] = GetDistance(myStartTileIndex, myTargetTileIndex);
@@ -91,14 +98,16 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 	int YPos;
 	int currLocNodeValPlusOne;
 
-	while (currentTileIndex != myTargetTileIndex && hasNodesInChecklist)
+	while (currentTileIndex != myTargetTileIndex && myCheckListSize > 0)
 	{
 		if (myTileXPositions[currentTileIndex] == myTileAmount)
 		{
+			//Slå ihop GetPOisiton uträkningar
 			myTileXPositions[currentTileIndex] = GetPosition(currentTileIndex).xPos;
 			myTileYPositions[currentTileIndex] = GetPosition(currentTileIndex).yPos;
 		}
 
+		//Skippa myTileXPositions och myTileYPositions för att, 1. slippa onödig allokering, samt det är lättare att använda GetPosition(currentTileIndex)
 		XPos = myTileXPositions[currentTileIndex];
 		YPos = myTileYPositions[currentTileIndex];
 
@@ -114,6 +123,9 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 		lTileIndex = ((XPos - 1) + YPos * myMapWidth);
 		dTileIndex = (XPos + (YPos + 1) * myMapWidth);
 
+		//Svårlästa if statements, knepiga uträkningar
+		//Istället för att kolla -1 eller +1 i y-led, sub eller add mapwidth 
+
 		if (
 			XPos + 1 < myMapWidth &&
 			pMap[rTileIndex] == 1 &&
@@ -121,6 +133,7 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 			currLocNodeValPlusOne < myLocalNodeValues[rTileIndex]
 			)
 		{
+			//Extrahera allt i if statement till egen inline funktion fär att slippa repetition
 			myParentNodeValues[rTileIndex] = currentTileIndex;
 			myLocalNodeValues[rTileIndex] = currLocNodeValPlusOne;
 			myGlobalNodeValues[rTileIndex] = myLocalNodeValues[rTileIndex] + GetDistance(rTileIndex, myTargetTileIndex);
@@ -167,70 +180,56 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 		}
 
 		RemoveCurrentNodeFromCheckList();
+
 		if (myCheckListSize > 0)
 		{
 			currentTileIndex = myNodeCheckList[0];
 		}
-
-		hasNodesInChecklist = myCheckListSize > 0;
 	}
 
-	int pathLength = -1;
-	if (currentTileIndex == myTargetTileIndex)
+
+	if (currentTileIndex != myTargetTileIndex)
 	{
-		pathLength = 0;
-		int indexToSave = GetIndex(myTargetX, myTargetY);
-		int* tempBuffer = new int[myBufferSize];
-		while (indexToSave < myTileAmount)
-		{
-			if (pathLength < myBufferSize)
-			{
-				tempBuffer[pathLength] = indexToSave;
-			}
-			indexToSave = myParentNodeValues[indexToSave];
-			pathLength++;
-		}
-		pathLength--;
-
-		if (pathLength < myBufferSize && pOutBuffer != nullptr)
-		{
-			for (int bufferIndex = 0; bufferIndex < pathLength; bufferIndex++)
-			{
-				pOutBuffer[bufferIndex] = tempBuffer[pathLength - bufferIndex - 1];
-			}
-		}
-		delete[]tempBuffer;
+		return -1;
 	}
 
+	int pathLength = 0;
+	int indexToSave = GetIndex(myTargetX, myTargetY);
+	int* tempBuffer = new int[myBufferSize];
+	while (indexToSave < myTileAmount)
+	{
+		if (pathLength < myBufferSize)
+		{
+			tempBuffer[pathLength] = indexToSave;
+		}
+		indexToSave = myParentNodeValues[indexToSave];
+		pathLength++;
+	}
+	pathLength--;
+
+	//Det behövs inte "speglas" när man läser pathen
+	if (pathLength < myBufferSize && pOutBuffer != nullptr)
+	{
+		for (int bufferIndex = 0; bufferIndex < pathLength; bufferIndex++)
+		{
+			pOutBuffer[bufferIndex] = tempBuffer[pathLength - bufferIndex - 1];
+		}
+	}
+
+	delete[]tempBuffer;
 
 	return pathLength;
 }
 
-int PathFinder::GetIndex(int aXPos, int aYPos)
-{
-	return (aXPos % myMapWidth + aYPos * myMapWidth);
-}
-
-Nick::Vector2 PathFinder::GetPosition(int aIndex)
-{
-	return { aIndex % myMapWidth, aIndex / myMapWidth };
-}
-
-int PathFinder::GetDistance(int aIndexA, int aIndexB)
-{
-	int a = GetPosition(aIndexA).xPos - GetPosition(aIndexB).xPos;
-	int b = GetPosition(aIndexA).yPos - GetPosition(aIndexB).yPos;
-	return a * a + b * b;
-}
-
 void PathFinder::AddNodeToCheckList(int aNode)
 {
+	myNodeCheckList[myCheckListSize++] = aNode;
+	myNodeExistsIncheckList->Set(aNode, true);
+	
+	//Bryta ut ut if statement till bools så man förstår vad allt gör
+	//FATTAR JAG VAD DETTA ÄR ???? myGlobalNodeValues[myNodeCheckList[0]] >= myGlobalNodeValues[myNodeCheckList[myCheckListSize - 1]])
 	if (myCheckListSize > 0)
 	{
-		myNodeCheckList[myCheckListSize++] = aNode;
-		myNodeExistsIncheckList->Set(aNode, true);
-
-
 		if (myGlobalNodeValues[myNodeCheckList[0]] >= myGlobalNodeValues[myNodeCheckList[myCheckListSize - 1]])
 		{
 			int tempIndex = myNodeCheckList[0];
@@ -243,30 +242,22 @@ void PathFinder::AddNodeToCheckList(int aNode)
 			}
 		}
 	}
-	else
-	{
-		myNodeCheckList[myCheckListSize++] = aNode;
-		myNodeExistsIncheckList->Set(aNode, true);
-	}
 }
 
 void PathFinder::RemoveCurrentNodeFromCheckList()
 {
-	if (myCheckListSize > 0)
-	{
-		myNodeExistsIncheckList->Set(myNodeCheckList[myCurrentNodeIndex], false);
-		myNodeCheckList[myCurrentNodeIndex] = myNodeCheckList[myCheckListSize - 1];
-		myNodeCheckList[myCheckListSize - 1] = 0;
-		myCheckListSize--;
+	myNodeExistsIncheckList->Set(myNodeCheckList[myCurrentNodeIndex], false);
+	myNodeCheckList[myCurrentNodeIndex] = myNodeCheckList[myCheckListSize - 1];
+	myNodeCheckList[myCheckListSize - 1] = 0;
+	myCheckListSize--;
 
-		if (myCurrentNodeIndex != 0)
-		{
-			myCurrentNodeIndex = 0;
-		}
-		else
-		{
-			SetShortestDistFirstInChecklist();
-		}
+	if (myCurrentNodeIndex != 0)
+	{
+		myCurrentNodeIndex = 0;
+	}
+	else
+	{
+		SetShortestDistFirstInChecklist();
 	}
 }
 
