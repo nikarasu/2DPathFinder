@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "structs.h"
 #include "CustomBitSet.h"
 
@@ -13,11 +13,27 @@ public:
 private:
 	int SearchForShortestPath(const unsigned char* pMap, int* pOutBuffer);
 
-	int GetIndex(int aXPos, int aYPos);
-	Nick::Vector2 GetPosition(int aIndex);
-	int GetDistance(int aIndexA, int aIndexB);
+	inline const int GetIndex(const int aXPos, const int aYPos) const
+	{
+		return (aXPos % myMapWidth + aYPos * myMapWidth);
+	}
 
-	bool myFoundTarget;
+	const Nick::Vector2 GetPosition(const int aIndex) const
+	{
+		return { aIndex % myMapWidth, aIndex / myMapWidth };
+	}
+
+	const int GetDistance(const int aIndexA, const int aIndexB) const
+	//Sista const gör att man inte kan ändra på pathfinder objektet,t ex ändra på medlemsvariabler medans man är inne i funktionen
+	//Man får inte heller kalla på icke constade medlemsfunktioner
+	{
+		const Nick::Vector2 aPos = GetPosition(aIndexA);
+		const Nick::Vector2 bPos = GetPosition(aIndexB);
+		const int a = aPos.xPos - bPos.xPos;
+		const int b = aPos.yPos - bPos.yPos;
+		return a * a + b * b;
+	}
+
 	int myStartX;
 	int myStartY;
 	int myTargetX;
