@@ -14,7 +14,7 @@ int FindPath(
 	const int nOutBufferSize
 )
 {
-	//Undvik classes f?r tr?ds?kerhetens skull
+	//Avoid classes for thread safety
 	PathFinder pf;
 	return 	pf.FindPath(nStartX, nStartY, nTargetX, nTargetY, pMap, nMapWidth, nMapHeight, pOutBuffer, nOutBufferSize);
 }
