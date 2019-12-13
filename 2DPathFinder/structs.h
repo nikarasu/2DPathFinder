@@ -10,7 +10,7 @@ namespace Nick
 
 	struct Node
 	{
-		//Konstruktor och destruktor kan vara dyra SE CLASS
+		//Constructor and destructor can be expensive SEE CLASS
 		~Node() 
 		{
 			delete[] myNeighbors;
