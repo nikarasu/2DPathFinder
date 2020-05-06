@@ -48,8 +48,8 @@ int PathFinder::FindPath(const int nStartX,	const int nStartY, const int nTarget
 
 	myNodeExistsIncheckList = new CustomBitSet(myTileAmount);
 
-	//Minska antalet allokeringar, väldigt dyrt
-	//Ha allting i samma lista
+	//TODO: lower amount of allocations, move everything into one single list
+	//Consider what happens if the lists are on different caches
 	//Vad händer om arrays hamnar på olika cache?
 
 	myLocalNodeValues = new int[myTileAmount];
