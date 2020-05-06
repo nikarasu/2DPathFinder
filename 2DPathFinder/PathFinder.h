@@ -24,8 +24,10 @@ private:
 	}
 
 	const int GetDistance(const int aIndexA, const int aIndexB) const
-	//Sista const gör att man inte kan ändra på pathfinder objektet,t ex ändra på medlemsvariabler medans man är inne i funktionen
-	//Man får inte heller kalla på icke constade medlemsfunktioner
+	//First const makes the return variable const
+	//aIndexA is set to const, so it can't be changed inside the function, same for aIndexB
+	//Last const makes it so you cannot change the member variables of the pathfinder object that runs the function
+	//You may not Man får inte heller kalla på icke constade medlemsfunktioner
 	{
 		const Nick::Vector2 aPos = GetPosition(aIndexA);
 		const Nick::Vector2 bPos = GetPosition(aIndexB);
