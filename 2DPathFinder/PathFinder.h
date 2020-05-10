@@ -8,7 +8,7 @@ public:
 	PathFinder();
 	~PathFinder();
 
-	int FindPath(const int nStartX,	const int nStartY, const int nTargetX, const int nTargetY, const unsigned char* pMap, const int nMapWidth, const int nMapHeight, int* pOutBuffer, const int nOutBufferSize);
+	int FindPath(Nick::Vector2 aStart, Nick::Vector2 aTarget, const unsigned char* pMap, const int nMapWidth, const int nMapHeight, int* pOutBuffer, const int nOutBufferSize);
 
 private:
 	int SearchForShortestPath(const unsigned char* pMap, int* pOutBuffer);

@@ -18,7 +18,7 @@ PathFinder::~PathFinder()
 
 }
 
-int PathFinder::FindPath(const int nStartX,	const int nStartY, const int nTargetX, const int nTargetY, const unsigned char * pMap, const int nMapWidth, const int nMapHeight, int* pOutBuffer, const int nOutBufferSize)
+int PathFinder::FindPath(Nick::Vector2 aStart, Nick::Vector2 aTarget, const unsigned char * pMap, const int nMapWidth, const int nMapHeight, int* pOutBuffer, const int nOutBufferSize)
 {
 
 	if (pMap == nullptr)
@@ -26,7 +26,7 @@ int PathFinder::FindPath(const int nStartX,	const int nStartY, const int nTarget
 		return -1;
 	}
 
-	if((nStartX == nTargetX) && (nStartY == nTargetY))
+	if(aStart == aTarget)
 	{
 		return 0;
 	}
@@ -36,13 +36,11 @@ int PathFinder::FindPath(const int nStartX,	const int nStartY, const int nTarget
 	myBufferSize = nOutBufferSize;
 	myTileAmount = myMapHeight * myMapWidth;
 
-	myStartPosition.xPos = nStartX;
-	myStartPosition.yPos = nStartY;
-	myStartTileIndex = GetIndex(nStartX, nStartY);
+	myStartPosition = aStart;
+	myStartTileIndex = GetIndex(aStart.xPos, aStart.yPos);
 
-	myTargetPosition.xPos = nTargetX;
-	myTargetPosition.yPos = nTargetY;
-	myTargetTileIndex = GetIndex(nTargetX, nTargetY);
+	myTargetPosition = aTarget;
+	myTargetTileIndex = GetIndex(aTarget.xPos, aTarget.yPos);
 
 	myNodeExistsIncheckList = new CustomBitSet(myTileAmount);
 

@@ -16,7 +16,7 @@ int FindPath(
 {
 	//Avoid classes for thread safety
 	PathFinder pf;
-	return 	pf.FindPath(nStartX, nStartY, nTargetX, nTargetY, pMap, nMapWidth, nMapHeight, pOutBuffer, nOutBufferSize);
+	return 	pf.FindPath({ nStartX, nStartY }, { nTargetX, nTargetY }, pMap, nMapWidth, nMapHeight, pOutBuffer, nOutBufferSize);
 }
 
 
