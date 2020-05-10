@@ -15,7 +15,8 @@ namespace Nick
 		int yPos;
 	};
 
-	const bool operator==(const Vector2& aVec0, const Vector2& aVec1)
+	//Had to inline this else pragma once wouldn't work
+	inline const bool operator==(const Vector2& aVec0, const Vector2& aVec1)
 	{
 		return(aVec0.xPos == aVec1.xPos && aVec0.yPos == aVec1.yPos);
 	}
