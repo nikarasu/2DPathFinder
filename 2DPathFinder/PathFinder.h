@@ -18,6 +18,7 @@ private:
 		int pathLength = 0;
 		int indexToSave = GetIndex(myTargetPosition.xPos, myTargetPosition.yPos);
 		int* tempBuffer = new int[myBufferSize];
+
 		while (indexToSave < myTileAmount)
 		{
 			if (pathLength < myBufferSize)
@@ -51,7 +52,7 @@ private:
 	*/
 	bool CheckTileValidity(const unsigned char * pMap, int aNeighbourTileIndex)
 	{
-		return 			pMap[aNeighbourTileIndex] == 1 &&
+		return pMap[aNeighbourTileIndex] == 1 &&
 			!myNodeExistsIncheckList->Test(aNeighbourTileIndex) &&
 			myCurrLocNodeValPlusOne < myIntList[myLocalNodeOffset + aNeighbourTileIndex];
 	}

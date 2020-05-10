@@ -149,21 +149,20 @@ void PathFinder::AddNodeToCheckList(int aNode)
 {
 	myNodeCheckList[myCheckListSize++] = aNode;
 	myNodeExistsIncheckList->Set(aNode, true);
-	
-	//Bryta ut ut if statement till bools så man förstår vad allt gör
-	//FATTAR JAG VAD DETTA ÄR ???? myIntList[myGlobalNodeOffset + myNodeCheckList[0]] >= myIntList[myGlobalNodeOffset + myNodeCheckList[myCheckListSize - 1]])
-	if (myCheckListSize > 0)
-	{
-		if (myIntList[myGlobalNodeOffset + myNodeCheckList[0]] >= myIntList[myGlobalNodeOffset + myNodeCheckList[myCheckListSize - 1]])
-		{
-			int tempIndex = myNodeCheckList[0];
-			myNodeCheckList[0] = myNodeCheckList[myCheckListSize - 1];
-			myNodeCheckList[myCheckListSize - 1] = tempIndex;
 
-			if (myCurrentNodeIndex == 0)
-			{
-				myCurrentNodeIndex = myCheckListSize - 1;
-			}
+	//Bryta ut if statement till bools så man förstår vad allt gör
+	//FATTAR JAG VAD DETTA ÄR ???? myIntList[myGlobalNodeOffset + myNodeCheckList[0]] >= myIntList[myGlobalNodeOffset + myNodeCheckList[myCheckListSize - 1]])
+	if (
+		myCheckListSize > 0 && 
+		myIntList[myGlobalNodeOffset + myNodeCheckList[0]] >= myIntList[myGlobalNodeOffset + myNodeCheckList[myCheckListSize - 1]])
+	{
+		int tempIndex = myNodeCheckList[0];
+		myNodeCheckList[0] = myNodeCheckList[myCheckListSize - 1];
+		myNodeCheckList[myCheckListSize - 1] = tempIndex;
+
+		if (myCurrentNodeIndex == 0)
+		{
+			myCurrentNodeIndex = myCheckListSize - 1;
 		}
 	}
 }
