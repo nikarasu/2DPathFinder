@@ -36,12 +36,13 @@ int PathFinder::FindPath(const int nStartX,	const int nStartY, const int nTarget
 	myBufferSize = nOutBufferSize;
 	myTileAmount = myMapHeight * myMapWidth;
 
-	myStartX = nStartX;
-	myStartY = nStartY;
-	myStartTileIndex = GetIndex(myStartX, myStartY);
-	myTargetX = nTargetX;
-	myTargetY = nTargetY;
-	myTargetTileIndex = GetIndex(myTargetX, myTargetY);
+	myStartPosition.xPos = nStartX;
+	myStartPosition.yPos = nStartY;
+	myStartTileIndex = GetIndex(nStartX, nStartY);
+
+	myTargetPosition.xPos = nTargetX;
+	myTargetPosition.yPos = nTargetY;
+	myTargetTileIndex = GetIndex(nTargetX, nTargetY);
 
 	myNodeExistsIncheckList = new CustomBitSet(myTileAmount);
 
@@ -163,7 +164,7 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 	}
 
 	int pathLength = 0;
-	int indexToSave = GetIndex(myTargetX, myTargetY);
+	int indexToSave = GetIndex(myTargetPosition.xPos, myTargetPosition.yPos);
 	int* tempBuffer = new int[myBufferSize];
 	while (indexToSave < myTileAmount)
 	{

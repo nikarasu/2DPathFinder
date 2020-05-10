@@ -44,10 +44,9 @@ private:
 		return a * a + b * b;
 	}
 
-	int myStartX;
-	int myStartY;
-	int myTargetX;
-	int myTargetY;
+
+	Nick::Vector2 myStartPosition;
+	Nick::Vector2 myTargetPosition;
 	int myStartTileIndex;
 	int myTargetTileIndex;
 
