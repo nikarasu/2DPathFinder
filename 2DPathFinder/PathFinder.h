@@ -43,6 +43,12 @@ private:
 		return pathLength;
 	}
 
+	/*
+	* Returns true if aNeighbourTileIndex is:
+	* 1. a walkable tile
+	* 2. not in the checklist
+	* 3. the new local value is smaller than the local value currently in the tile
+	*/
 	bool CheckTileValidity(const unsigned char * pMap, int aNeighbourTileIndex)
 	{
 		return 			pMap[aNeighbourTileIndex] == 1 &&
