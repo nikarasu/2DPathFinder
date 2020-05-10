@@ -49,11 +49,12 @@ private:
 	int myTileAmount;
 	int myCurrentNodeIndex;
 
-	int* myLocalNodeValues;
-	int* myGlobalNodeValues;
-	int* myParentNodeValues;
-	int* myTileXPositions;
-	int* myTileYPositions;
+	int* myIntList;
+	int myLocalNodeOffset;
+	int myGlobalNodeOffset;
+	int myParentNodeOffset;
+	int myTileXPositionOffset;
+	int myTileYPositionOffset;
 	CustomBitSet* myNodeExistsIncheckList;
 
 	void AddNodeToCheckList(int aNode);
