@@ -13,6 +13,43 @@ public:
 private:
 	int SearchForShortestPath(const unsigned char* pMap, int* pOutBuffer);
 
+	int FillBufferAndReturnPathLength(int* pOutBuffer)
+	{
+		int pathLength = 0;
+		int indexToSave = GetIndex(myTargetPosition.xPos, myTargetPosition.yPos);
+		int* tempBuffer = new int[myBufferSize];
+		while (indexToSave < myTileAmount)
+		{
+			if (pathLength < myBufferSize)
+			{
+				tempBuffer[pathLength] = indexToSave;
+			}
+			indexToSave = myIntList[myParentNodeOffset + indexToSave];
+			pathLength++;
+		}
+		pathLength--;
+
+		//Det behovs inte "speglas" nar man laser pathen
+		if (pathLength < myBufferSize && pOutBuffer != nullptr)
+		{
+			for (int bufferIndex = 0; bufferIndex < pathLength; bufferIndex++)
+			{
+				pOutBuffer[bufferIndex] = tempBuffer[pathLength - bufferIndex - 1];
+			}
+		}
+
+		delete[]tempBuffer;
+
+		return pathLength;
+	}
+
+	bool CheckTileValidity(const unsigned char * pMap, int aNeighbourTileIndex)
+	{
+		return 			pMap[aNeighbourTileIndex] == 1 &&
+			!myNodeExistsIncheckList->Test(aNeighbourTileIndex) &&
+			myCurrLocNodeValPlusOne < myIntList[myLocalNodeOffset + aNeighbourTileIndex];
+	}
+
 	void inline CheckNeigbourTile(int aNeighbourIndex, int aCurrentTileIndex, int aCurrLocNodeValPlusOne)
 	{
 		myIntList[myParentNodeOffset + aNeighbourIndex] = aCurrentTileIndex;
@@ -62,6 +99,7 @@ private:
 	int myParentNodeOffset;
 	int myTileXPositionOffset;
 	int myTileYPositionOffset;
+	int myCurrLocNodeValPlusOne;
 	CustomBitSet* myNodeExistsIncheckList;
 
 	void AddNodeToCheckList(int aNode);

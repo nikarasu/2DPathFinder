@@ -79,7 +79,6 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 	int dTileIndex;
 	int XPos;
 	int YPos;
-	int currLocNodeValPlusOne;
 
 	while (currentTileIndex != myTargetTileIndex && myCheckListSize > 0)
 	{
@@ -99,7 +98,7 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 			myIntList[currentTileIndex + myGlobalNodeOffset] = GetDistance(currentTileIndex, myTargetTileIndex);
 		}
 
-		currLocNodeValPlusOne = myIntList[currentTileIndex + myLocalNodeOffset] + 1;
+		myCurrLocNodeValPlusOne = myIntList[currentTileIndex + myLocalNodeOffset] + 1;
 
 		rTileIndex = ((XPos + 1) + YPos * myMapWidth);
 		uTileIndex = (XPos + (YPos - 1) * myMapWidth);
@@ -109,44 +108,24 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 		//Svårlästa if statements, knepiga uträkningar
 		//Istället för att kolla -1 eller +1 i y-led, sub eller add mapwidth 
 
-		if (
-			XPos + 1 < myMapWidth &&
-			pMap[rTileIndex] == 1 &&
-			!myNodeExistsIncheckList->Test(rTileIndex) &&
-			currLocNodeValPlusOne < myIntList[myLocalNodeOffset + rTileIndex]
-			)
+		if (XPos + 1 < myMapWidth && CheckTileValidity(pMap, rTileIndex))
 		{
-			CheckNeigbourTile(rTileIndex, currentTileIndex, currLocNodeValPlusOne);
+			CheckNeigbourTile(rTileIndex, currentTileIndex, myCurrLocNodeValPlusOne);
 		}
 
-		if (
-			YPos - 1 >= 0 &&
-			pMap[uTileIndex] == 1 &&
-			!myNodeExistsIncheckList->Test(uTileIndex) &&
-			currLocNodeValPlusOne < myIntList[myLocalNodeOffset + uTileIndex]
-			)
+		if (YPos - 1 >= 0 && CheckTileValidity(pMap, uTileIndex))
 		{
-			CheckNeigbourTile(uTileIndex, currentTileIndex, currLocNodeValPlusOne);
+			CheckNeigbourTile(uTileIndex, currentTileIndex, myCurrLocNodeValPlusOne);
 		}
 
-		if (
-			XPos - 1 >= 0 &&
-			pMap[lTileIndex] == 1 &&
-			!myNodeExistsIncheckList->Test(lTileIndex) &&
-			currLocNodeValPlusOne < myIntList[myLocalNodeOffset + lTileIndex]
-			)
+		if (XPos - 1 >= 0 &&CheckTileValidity(pMap, lTileIndex))
 		{
-			CheckNeigbourTile(lTileIndex, currentTileIndex, currLocNodeValPlusOne);
+			CheckNeigbourTile(lTileIndex, currentTileIndex, myCurrLocNodeValPlusOne);
 		}
 
-		if (
-			YPos + 1 < myTileAmount &&
-			pMap[dTileIndex] == 1 &&
-			!myNodeExistsIncheckList->Test(dTileIndex) &&
-			currLocNodeValPlusOne < myIntList[myLocalNodeOffset + dTileIndex]
-			)
+		if (YPos + 1 < myTileAmount && CheckTileValidity(pMap, dTileIndex))
 		{
-			CheckNeigbourTile(dTileIndex, currentTileIndex, currLocNodeValPlusOne);
+			CheckNeigbourTile(dTileIndex, currentTileIndex, myCurrLocNodeValPlusOne);
 		}
 
 		RemoveCurrentNodeFromCheckList();
@@ -163,32 +142,7 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 		return -1;
 	}
 
-	int pathLength = 0;
-	int indexToSave = GetIndex(myTargetPosition.xPos, myTargetPosition.yPos);
-	int* tempBuffer = new int[myBufferSize];
-	while (indexToSave < myTileAmount)
-	{
-		if (pathLength < myBufferSize)
-		{
-			tempBuffer[pathLength] = indexToSave;
-		}
-		indexToSave = myIntList[myParentNodeOffset + indexToSave];
-		pathLength++;
-	}
-	pathLength--;
-
-	//Det behövs inte "speglas" när man läser pathen
-	if (pathLength < myBufferSize && pOutBuffer != nullptr)
-	{
-		for (int bufferIndex = 0; bufferIndex < pathLength; bufferIndex++)
-		{
-			pOutBuffer[bufferIndex] = tempBuffer[pathLength - bufferIndex - 1];
-		}
-	}
-
-	delete[]tempBuffer;
-
-	return pathLength;
+	return FillBufferAndReturnPathLength(pOutBuffer);
 }
 
 void PathFinder::AddNodeToCheckList(int aNode)
