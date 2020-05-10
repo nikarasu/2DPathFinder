@@ -13,6 +13,14 @@ public:
 private:
 	int SearchForShortestPath(const unsigned char* pMap, int* pOutBuffer);
 
+	void inline CheckNeigbourTile(int aNeighbourIndex, int aCurrentTileIndex, int aCurrLocNodeValPlusOne)
+	{
+		myIntList[myParentNodeOffset + aNeighbourIndex] = aCurrentTileIndex;
+		myIntList[myLocalNodeOffset + aNeighbourIndex] = aCurrLocNodeValPlusOne;
+		myIntList[myGlobalNodeOffset + aNeighbourIndex] = myIntList[myLocalNodeOffset + aNeighbourIndex] + GetDistance(aNeighbourIndex, myTargetTileIndex);
+		AddNodeToCheckList(aNeighbourIndex);
+	}
+
 	inline const int GetIndex(const int aXPos, const int aYPos) const
 	{
 		return (aXPos % myMapWidth + aYPos * myMapWidth);

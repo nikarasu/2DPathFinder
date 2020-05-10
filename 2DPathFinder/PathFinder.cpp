@@ -115,11 +115,7 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 			currLocNodeValPlusOne < myIntList[myLocalNodeOffset + rTileIndex]
 			)
 		{
-			//Extrahera allt i if statement till egen inline funktion fär att slippa repetition
-			myIntList[myParentNodeOffset + rTileIndex] = currentTileIndex;
-			myIntList[myLocalNodeOffset + rTileIndex] = currLocNodeValPlusOne;
-			myIntList[myGlobalNodeOffset + rTileIndex] = myIntList[myLocalNodeOffset + rTileIndex] + GetDistance(rTileIndex, myTargetTileIndex);
-			AddNodeToCheckList(rTileIndex);
+			CheckNeigbourTile(rTileIndex, currentTileIndex, currLocNodeValPlusOne);
 		}
 
 		if (
@@ -129,10 +125,7 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 			currLocNodeValPlusOne < myIntList[myLocalNodeOffset + uTileIndex]
 			)
 		{
-			myIntList[myParentNodeOffset + uTileIndex] = currentTileIndex;
-			myIntList[myLocalNodeOffset + uTileIndex] = currLocNodeValPlusOne;
-			myIntList[myGlobalNodeOffset + uTileIndex] = myIntList[myLocalNodeOffset + uTileIndex] + GetDistance(uTileIndex, myTargetTileIndex);
-			AddNodeToCheckList(uTileIndex);
+			CheckNeigbourTile(uTileIndex, currentTileIndex, currLocNodeValPlusOne);
 		}
 
 		if (
@@ -142,10 +135,7 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 			currLocNodeValPlusOne < myIntList[myLocalNodeOffset + lTileIndex]
 			)
 		{
-			myIntList[myParentNodeOffset + lTileIndex] = currentTileIndex;
-			myIntList[myLocalNodeOffset + lTileIndex] = currLocNodeValPlusOne;
-			myIntList[myGlobalNodeOffset + lTileIndex] = myIntList[myLocalNodeOffset + lTileIndex] + GetDistance(lTileIndex, myTargetTileIndex);
-			AddNodeToCheckList(lTileIndex);
+			CheckNeigbourTile(lTileIndex, currentTileIndex, currLocNodeValPlusOne);
 		}
 
 		if (
@@ -155,10 +145,7 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 			currLocNodeValPlusOne < myIntList[myLocalNodeOffset + dTileIndex]
 			)
 		{
-			myIntList[myParentNodeOffset + dTileIndex] = currentTileIndex;
-			myIntList[myLocalNodeOffset + dTileIndex] = currLocNodeValPlusOne;
-			myIntList[myGlobalNodeOffset + dTileIndex] = myIntList[myLocalNodeOffset + dTileIndex] + GetDistance(dTileIndex, myTargetTileIndex);
-			AddNodeToCheckList(dTileIndex);
+			CheckNeigbourTile(dTileIndex, currentTileIndex, currLocNodeValPlusOne);
 		}
 
 		RemoveCurrentNodeFromCheckList();
