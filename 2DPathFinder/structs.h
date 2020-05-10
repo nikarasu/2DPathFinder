@@ -19,20 +19,4 @@ namespace Nick
 	{
 		return(aVec0.xPos == aVec1.xPos && aVec0.yPos == aVec1.yPos);
 	}
-	
-	struct Node
-	{
-		//Constructor and destructor can be expensive SEE CLASS
-		~Node() 
-		{
-			delete[] myNeighbors;
-		}
-		Node* myParent;
-		int myIndex;
-		int myXPos;
-		int myYPos;
-		int myDistToTarget;
-		int myDistToStart;
-		Node* myNeighbors;
-	};
 }
