@@ -62,6 +62,7 @@ int PathFinder::FindPath(const int nStartX,	const int nStartY, const int nTarget
 	signed int pathLength = SearchForShortestPath(pMap, pOutBuffer);
 
 	delete[] myNodeCheckList;
+	delete[] myIntList;
 	delete myNodeExistsIncheckList;
 
 	return pathLength;
