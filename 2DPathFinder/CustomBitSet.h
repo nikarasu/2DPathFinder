@@ -7,13 +7,14 @@ class CustomBitSet
 public:
 	CustomBitSet(int aBitAmount)
 	{
-		int numChunks = aBitAmount / myTypeBitAmount +1;
+		int numChunks = aBitAmount / myTypeBitAmount + 1;
 		myData.resize(numChunks);
 	};
 
 	inline bool Test(int index) const
 	{
 		const int64_t& chunk = myData[index / myTypeBitAmount];
+
 		const int64_t bit = int64_t(1) << (index % myTypeBitAmount);
 		return (chunk & bit) != 0;
 	}
