@@ -11,6 +11,16 @@ PathFinder::PathFinder()
 	myCheckListSize = 0;
 	myCurrentNodeIndex = 0;
 	myStartTileIndex = 0;
+
+	myParentNodeOffset = 0;
+	myLocalNodeOffset = 0;
+	myGlobalNodeOffset = 0;
+
+	myTargetPosition = { 0,0 };
+	myStartPosition = { 0,0 };
+	myCurrLocNodeValPlusOne = 0;
+	myTileXPositionOffset = 0;
+	myTileYPositionOffset = 0;
 }
 
 PathFinder::~PathFinder()
