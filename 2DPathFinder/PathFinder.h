@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "structs.h"
 #include "CustomBitSet.h"
+#include <iostream>
 
 class PathFinder
 {
@@ -55,6 +56,9 @@ private:
 		return pMap[aNeighbourTileIndex] == 1 &&
 			!myNodeExistsIncheckList->Test(aNeighbourTileIndex) &&
 			myCurrLocNodeValPlusOne < myIntList[myLocalNodeOffset + aNeighbourTileIndex];
+#ifdef coutingatstuff
+std::cout << "Tile <" << aNeighbourTileIndex << "> isWalkable: " << isWalkable << " - isNotInChecklist: " << isNotInChecklist << " - isShorterDistanceToStart:" << isShorterDistanceToStart << std::endl;
+#endif
 	}
 
 	void inline CheckNeigbourTile(int aNeighbourIndex, int aCurrentTileIndex, int aCurrLocNodeValPlusOne)
@@ -62,6 +66,10 @@ private:
 		myIntList[myParentNodeOffset + aNeighbourIndex] = aCurrentTileIndex;
 		myIntList[myLocalNodeOffset + aNeighbourIndex] = aCurrLocNodeValPlusOne;
 		myIntList[myGlobalNodeOffset + aNeighbourIndex] = myIntList[myLocalNodeOffset + aNeighbourIndex] + GetDistance(aNeighbourIndex, myTargetTileIndex);
+		
+#ifdef coutingatstuff
+		std::cout << " is updated, ";
+#endif
 		AddNodeToCheckList(aNeighbourIndex);
 	}
 

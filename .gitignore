@@ -35,3 +35,5 @@
 .vs/2DPathFinder/v15/.suo
 .vs/2DPathFinder/v15/.suo
 .vs/2DPathFinder/v15/.suo
+*.ipdb
+*.iobj
