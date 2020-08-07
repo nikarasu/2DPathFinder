@@ -22,5 +22,27 @@ int FindPath(
 
 int main()
 {
-	return 0;
+	unsigned char pMap30x4AllAccess[] =
+	{
+		1,1,1,1,1,0,0,1,1,0,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,
+		1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+		1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,0,1,1,1,0,0,0,0,0,0,1,1,
+		1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1
+	};
+
+	const int bufferSize = 42;
+	int pOutBuffer[bufferSize];
+
+	int result = FindPath(0, 0, 23, 1, pMap30x4AllAccess, 30, 4, pOutBuffer, bufferSize);
+	
+	std::cout << "Result: " << result << std::endl;
+	if (result == bufferSize)
+	{
+		std::cout << "Found path" << std::endl;
+	}
+	else
+	{
+		std::cout << "No path" << std::endl;
+	}
+	system("pause");
 }

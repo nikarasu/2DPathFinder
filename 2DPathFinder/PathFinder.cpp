@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "PathFinder.h"
+
 //#define coutingatstuff
 
 PathFinder::PathFinder()
@@ -31,7 +32,6 @@ PathFinder::~PathFinder()
 
 int PathFinder::FindPath(Nick::Vector2 aStart, Nick::Vector2 aTarget, const unsigned char * pMap, const int nMapWidth, const int nMapHeight, int* pOutBuffer, const int nOutBufferSize)
 {
-
 	if (pMap == nullptr)
 	{
 		return -1;
@@ -63,6 +63,12 @@ int PathFinder::FindPath(Nick::Vector2 aStart, Nick::Vector2 aTarget, const unsi
 	myParentNodeOffset = myTileAmount * 2;
 	myTileXPositionOffset = myTileAmount * 3;
 	myTileYPositionOffset = myTileAmount * 4;
+
+	for (int index = 0; index < myTileAmount; ++index)
+	{
+		myIntList[myTileXPositionOffset + index] = index % myMapWidth;
+		myIntList[myTileYPositionOffset + index] = index / myMapWidth;
+	}
 
 	myNodeCheckList = new int[myTileAmount] {0};
 
@@ -101,10 +107,15 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 
 	while (currentTileIndex != myTargetTileIndex && myCheckListSize > 0)
 	{
-		if (myIntList[currentTileIndex + myTileXPositionOffset] == myTileAmount)
+
 #ifdef coutingatstuff
 		std::cout << "Current tile <" << currentTileIndex << "> - Position: " << GetPosition(currentTileIndex).xPos << ", " << GetPosition(currentTileIndex).yPos << std::endl;
 #endif
+
+		int check1 = myIntList[currentTileIndex + myTileXPositionOffset];
+		int check2 = myIntList[currentTileIndex + myTileYPositionOffset];
+
+		if (check1 == myTileAmount || check2 == myTileAmount)
 		{
 			//Slå ihop GetPOisiton uträkningar
 			myIntList[currentTileIndex + myTileXPositionOffset] = GetPosition(currentTileIndex).xPos;
@@ -132,7 +143,7 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 
 		if (XPos + 1 < myMapWidth && CheckTileValidity(pMap, rTileIndex))
 		{
-			CheckNeigbourTile(rTileIndex, currentTileIndex, myCurrLocNodeValPlusOne);
+
 #ifdef coutingatstuff
 			std::cout << "Right neighbour <" << rTileIndex << "> ";
 #endif
@@ -141,7 +152,7 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 
 		if (YPos - 1 >= 0 && CheckTileValidity(pMap, uTileIndex))
 		{
-			CheckNeigbourTile(uTileIndex, currentTileIndex, myCurrLocNodeValPlusOne);
+
 #ifdef coutingatstuff
 			std::cout << "Up neighbour <" << uTileIndex << "> ";
 #endif
@@ -150,40 +161,56 @@ int PathFinder::SearchForShortestPath(const unsigned char * pMap, int* pOutBuffe
 
 		if (XPos - 1 >= 0 &&CheckTileValidity(pMap, lTileIndex))
 		{
-			CheckNeigbourTile(lTileIndex, currentTileIndex, myCurrLocNodeValPlusOne);
+
 #ifdef coutingatstuff
 			std::cout << "Left neighbour <" << lTileIndex << "> ";
 #endif
+			UpdateNeighbourTileAndAddToChecklist(lTileIndex, currentTileIndex, myCurrLocNodeValPlusOne);
+		}
+
+		if (YPos + 1 < myMapHeight && CheckTileValidity(pMap, dTileIndex))
+		{
+
 #ifdef coutingatstuff
 			std::cout << "Down neighbour <" << dTileIndex << "> ";
 #endif
+
+			UpdateNeighbourTileAndAddToChecklist(dTileIndex, currentTileIndex, myCurrLocNodeValPlusOne);
 		}
+		
 #ifdef coutingatstuff
 		std::cout << "Tiles in checklist (size " << myCheckListSize << "): ";
 
-		if (YPos + 1 < myTileAmount && CheckTileValidity(pMap, dTileIndex))
+		for (int i = 0; i < myCheckListSize; ++i)
 		{
-			CheckNeigbourTile(dTileIndex, currentTileIndex, myCurrLocNodeValPlusOne);
 			std::cout << myNodeCheckList[i] << "  ";
 		}
 
 		std::cout << "" << std::endl;
 #endif
+
 		RemoveCurrentNodeFromCheckList();
+
 
 #ifdef coutingatstuff
 		std::cout << "Checklist size: " << myCheckListSize << std::endl;
 #endif
+
 		if (myCheckListSize > 0)
 		{
+
 #ifdef coutingatstuff
 			std::cout << "Updating current tile from <" << currentTileIndex << "> ";
 #endif
 			currentTileIndex = myNodeCheckList[0];
+
+			
 #ifdef coutingatstuff
 			std::cout << " to <" << currentTileIndex << "> " << std::endl;
 #endif
 		}
+
+		
 #ifdef coutingatstuff
 		std::cout << "-------------------------------\n" << std::endl;
 #endif
@@ -202,15 +229,22 @@ void PathFinder::AddNodeToCheckList(int aNode)
 {
 	myNodeCheckList[myCheckListSize++] = aNode;
 	myNodeExistsIncheckList->Set(aNode, true);
+	
 #ifdef coutingatstuff
 std::cout << " added to checklist ";
 #endif
 
-	//Bryta ut if statement till bools så man förstår vad allt gör
-	//FATTAR JAG VAD DETTA ÄR ???? myIntList[myGlobalNodeOffset + myNodeCheckList[0]] >= myIntList[myGlobalNodeOffset + myNodeCheckList[myCheckListSize - 1]])
-	if (
-		myCheckListSize > 0 && 
-		myIntList[myGlobalNodeOffset + myNodeCheckList[0]] >= myIntList[myGlobalNodeOffset + myNodeCheckList[myCheckListSize - 1]])
+	UpdateChecklistIfNewNodeIsCloserToTarget();
+}
+
+void PathFinder::UpdateChecklistIfNewNodeIsCloserToTarget()
+{
+	//Bryta ut if statement till bools sa man forstar vad allt gor
+	int firstNodeDistanceToTarget = myIntList[myGlobalNodeOffset + myNodeCheckList[0]];
+	int recentlyAddedNodeDistanceToTarget = myIntList[myGlobalNodeOffset + myNodeCheckList[myCheckListSize - 1]];
+
+	//TODO: Do I really need to check is size is > 0 ? Redundant?
+	if (myCheckListSize > 0 && firstNodeDistanceToTarget >= recentlyAddedNodeDistanceToTarget)
 	{
 		int tempIndex = myNodeCheckList[0];
 		myNodeCheckList[0] = myNodeCheckList[myCheckListSize - 1];
@@ -220,6 +254,7 @@ std::cout << " added to checklist ";
 		{
 			myCurrentNodeIndex = myCheckListSize - 1;
 		}
+	
 #ifdef coutingatstuff
 std::cout << "and ";
 	}
@@ -229,6 +264,7 @@ std::cout << "and ";
 		std::cout << "but not ";
 #endif
 	}
+
 	#ifdef coutingatstuff
 std::cout << "closer to target <" << myTargetTileIndex << "> " << std::endl;
 #endif
@@ -236,9 +272,11 @@ std::cout << "closer to target <" << myTargetTileIndex << "> " << std::endl;
 
 void PathFinder::RemoveCurrentNodeFromCheckList()
 {
+
 #ifdef coutingatstuff
 	std::cout << "Remove node <" << myCurrentNodeIndex << "> from checklist" << std::endl;
 #endif
+
 	myNodeExistsIncheckList->Set(myNodeCheckList[myCurrentNodeIndex], false);
 	myNodeCheckList[myCurrentNodeIndex] = myNodeCheckList[myCheckListSize - 1];
 	myNodeCheckList[myCheckListSize - 1] = 0;
@@ -256,10 +294,12 @@ void PathFinder::RemoveCurrentNodeFromCheckList()
 
 void PathFinder::SetShortestDistFirstInChecklist()
 {
+	//TODO: Remove this for loop wit h a mysecondsmallestindex
+	//Maybe a BST would sort this out?
+
 	int smallestIndex = 0;
 	for (unsigned index = myCheckListSize; index--; )
 	{
-		//TODO: Remove this for loop wit h a mysecondsmallestindex
 		if (myIntList[myGlobalNodeOffset + myNodeCheckList[index]] < myIntList[myGlobalNodeOffset + myNodeCheckList[smallestIndex]])
 		{
 			smallestIndex = index;

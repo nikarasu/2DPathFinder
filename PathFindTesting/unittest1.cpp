@@ -507,7 +507,7 @@ namespace PathFindTesting
 			Assert::AreNotEqual(result, -1);
 		}
 
-		TEST_METHOD(HuuuugeMapWithWalls2)
+		TEST_METHOD(HuuuugeMapWithWalls2) // : warning C6262: Function uses '34416' bytes of stack:  exceeds /analyze:stacksize '16384'.  Consider moving some data to heap.
 		{
 			unsigned char pMap180x180AllAccess[] =
 			{
@@ -898,8 +898,8 @@ namespace PathFindTesting
 			const int bufferSize = 50;
 			const int threadAmount = 10;
 
-			Nick::Vector2 startPositionArray[threadAmount];
-			Nick::Vector2 targetPositionArray[threadAmount];
+			Nick::Vector2 startPositionArray[threadAmount] = {0,0};
+			Nick::Vector2 targetPositionArray[threadAmount] = { 0,0 };
 
 			for (int index = 0; index < threadAmount; ++index)
 			{
@@ -974,8 +974,8 @@ namespace PathFindTesting
 			const int bufferSize = 30;
 			const int threadAmount = 10;
 
-			Nick::Vector2 startPositionArray[threadAmount];
-			Nick::Vector2 targetPositionArray[threadAmount];
+			Nick::Vector2 startPositionArray[threadAmount] = { 0,0 };
+			Nick::Vector2 targetPositionArray[threadAmount] = { 0,0 };
 
 			for (int index = 0; index < threadAmount; ++index)
 			{
@@ -1059,8 +1059,8 @@ namespace PathFindTesting
 			const int bufferSize = 40;
 			const int threadAmount = 10;
 
-			Nick::Vector2 startPositionArray[threadAmount];
-			Nick::Vector2 targetPositionArray[threadAmount];
+			Nick::Vector2 startPositionArray[threadAmount] = { 0,0 };
+			Nick::Vector2 targetPositionArray[threadAmount] = { 0,0 };
 
 			for (int index = 0; index < threadAmount; ++index)
 			{
@@ -1125,8 +1125,8 @@ namespace PathFindTesting
 			const int bufferSize = 30;
 			const int threadAmount = 10;
 
-			Nick::Vector2 startPositionArray[threadAmount];
-			Nick::Vector2 targetPositionArray[threadAmount];
+			Nick::Vector2 startPositionArray[threadAmount] = { 0,0 };
+			Nick::Vector2 targetPositionArray[threadAmount] = { 0,0 };
 
 			for (int index = 0; index < threadAmount; ++index)
 			{

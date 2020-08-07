@@ -53,15 +53,20 @@ private:
 	*/
 	bool CheckTileValidity(const unsigned char * pMap, int aNeighbourTileIndex)
 	{
-		return pMap[aNeighbourTileIndex] == 1 &&
-			!myNodeExistsIncheckList->Test(aNeighbourTileIndex) &&
-			myCurrLocNodeValPlusOne < myIntList[myLocalNodeOffset + aNeighbourTileIndex];
+		bool isWalkable = pMap[aNeighbourTileIndex] == 1;
+		bool isNotInChecklist = !myNodeExistsIncheckList->Test(aNeighbourTileIndex);
+		bool isShorterDistanceToStart = myCurrLocNodeValPlusOne < myIntList[myLocalNodeOffset + aNeighbourTileIndex];
+
 #ifdef coutingatstuff
 std::cout << "Tile <" << aNeighbourTileIndex << "> isWalkable: " << isWalkable << " - isNotInChecklist: " << isNotInChecklist << " - isShorterDistanceToStart:" << isShorterDistanceToStart << std::endl;
 #endif
+
+		bool result = isWalkable && isNotInChecklist && isShorterDistanceToStart;
+
+		return  result;
 	}
 
-	void inline CheckNeigbourTile(int aNeighbourIndex, int aCurrentTileIndex, int aCurrLocNodeValPlusOne)
+	void inline UpdateNeighbourTileAndAddToChecklist(int aNeighbourIndex, int aCurrentTileIndex, int aCurrLocNodeValPlusOne)
 	{
 		myIntList[myParentNodeOffset + aNeighbourIndex] = aCurrentTileIndex;
 		myIntList[myLocalNodeOffset + aNeighbourIndex] = aCurrLocNodeValPlusOne;
@@ -118,6 +123,10 @@ std::cout << "Tile <" << aNeighbourTileIndex << "> isWalkable: " << isWalkable <
 	CustomBitSet* myNodeExistsIncheckList;
 
 	void AddNodeToCheckList(int aNode);
+
+	void UpdateChecklistIfNewNodeIsCloserToTarget();
+	
+
 	void RemoveCurrentNodeFromCheckList();
 	void SetShortestDistFirstInChecklist();
 
