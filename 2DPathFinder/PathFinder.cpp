@@ -240,6 +240,7 @@ std::cout << " added to checklist ";
 void PathFinder::UpdateChecklistIfNewNodeIsCloserToTarget()
 {
 	//Bryta ut if statement till bools sa man forstar vad allt gor
+	//https://stackoverflow.com/questions/15843525/how-do-you-insert-the-value-in-a-sorted-vector/25524075#25524075
 	int firstNodeDistanceToTarget = myIntList[myGlobalNodeOffset + myNodeCheckList[0]];
 	int recentlyAddedNodeDistanceToTarget = myIntList[myGlobalNodeOffset + myNodeCheckList[myCheckListSize - 1]];
 
